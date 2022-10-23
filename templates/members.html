@@ -1,0 +1,57 @@
+
+<html>
+<head>
+    <h1>
+        Clinic Members <br>
+    </h1>
+</head>
+ <body>
+
+<table border=1 id="table" class="table">
+<tbody>
+<title>
+        Clinic Members
+    </title>
+        <tr>
+            <th scope="col">Id</th>
+        <th scope="col">Name</th>
+            <th scope="col">Edit</th>
+        <th scope="col">Delete</th>
+        </tr>
+
+
+        {% for member in members %}
+            <tr>
+                <td><a href='members/{{ member.MemberId }}'>{{ member.MemberId }}</a></td>
+                <td>{{ member.MemberName }}</td>
+                <td><a href='updatemember/{{ member.MemberId }}'>Edit</a></td>
+                <td><a href='deletemember/{{ member.MemberId }}'>Delete</a></td>
+
+            </tr>
+        {% endfor %}
+</tbody>
+</table>
+<td><a href='/addmember'>Add member</a></td>
+<h1>
+        total members unvaccinated <br>
+    </h1>
+ <td><br>{{total}} members <br></td>
+
+ <h1>
+        total sick per day last month <br>
+    </h1>
+
+ <table border=1 id="table2" class="table">
+<tbody>
+    {% for day in month_data %}
+        <tr>
+            <th scope="col">{{day[0]}}</th>
+            <td>{{day[1]}}</td>
+        </tr>
+    {%endfor%}
+
+</tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+
+<html>
+<head>
+    <h1>
+        Member details <br>
+    </h1>
+</head>
+ <body>
+
+<table border=1 id="table1" class="table1">
+<tbody>
+<title>
+        Clinic Members
+    </title>
+        <tr>
+            <th scope="col">photo</th>
+            <th scope="col">Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Address</th>
+        <th scope="col">Birth</th>
+        <th scope="col">Phone</th>
+        <th scope="col">Mobile</th>
+            <th scope="col">Edit</th>
+        <th scope="col">Delete</th>
+
+        </tr>
+
+            <tr>
+                {% if photo %}
+                <td><img src="data:image/png;base64, {{photo}}" alt="red dot" width="100" height="100"  />
+</td>
+                {%else%}
+                 <td><a href='/addimage/{{ member.MemberId }}'>Add image</a></td>
+                {%endif%}
+                <td>{{ member.MemberId }}</td>
+                <td>{{ member.MemberName }}</td>
+                <td>{{ member.MemberAddress }}</td>
+                <td>{{ member.MemberBirth }}</td>
+                <td>{{ member.MemberPhone }}</td>
+                <td>{{ member.MemberMobile }}</td>
+                <td><a href='/updatemember/{{ member.MemberId }}'>Edit</a></td>
+                <td><a href='/deletemember/{{ member.MemberId }}'>Delete</a></td>
+                <div class="card" id = "element1">
+
+            </tr>
+
+</tbody>
+</table>
+<table border=1 id="table2" class="table2">
+<tbody>
+<h1>
+        Vaccine info
+    </h1>
+        <tr>
+            <th scope="col">dose</th>
+        <th scope="col">date</th>
+        <th scope="col">vaccine</th>
+
+        </tr>
+
+        {% for dose in doses %}
+            <tr>
+                <td>{{ dose.dose }}</td>
+                <td>{{ dose.doseDate }}</td>
+                <td>{{ dose.vaccineName }}</td>
+
+            </tr>
+
+        {% endfor %}
+
+</tbody>
+</table>
+{% if doses|length <4 %}
+<tr>
+<td><a href='/addvaccine/{{ member.MemberId }}'>Add vaccine</a></td>
+</tr>
+{% endif%}
+                <table border= 1 id="table3" class="table3">
+<tbody>
+<h1>
+    Covid info
+</h1>
+        <tr>
+            <th scope="col">contaminationDate</th>
+        <th scope="col">recoveryDate</th>
+
+        </tr>
+            <tr>
+                {% if covid[0]%}
+                <td>{{ covid[0]}}</td>
+                {%else%}
+                <td><a href='/addcontamination/{{ member.MemberId }}'>Add date</a></td>
+                {%endif%}
+                {% if (covid[0]) and not (covid[1]) %}
+                <td><a href='/addrecovery/{{ member.MemberId }}'>Add date</a></td>
+                {%else%}
+                <td>{{ covid[1]}}</td>
+                {%endif%}
+            </tr>
+</tbody>
+                </table>
+
+</body>
+</html>

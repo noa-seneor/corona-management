@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+    <title>vaccine Details</title>
+
+</head>
+
+<body>
+    <h2>contamination and recovery Details</h2>
+
+    <form action="" method = "POST">
+        {% if i ==0 %}
+        <div class="form-group row">
+            {%if contamination%}
+            <label for="contamination">Contamination date</label>
+                <input type="date" placeholder="yyyy-mm-dd" value={{contamination}} readonly="readonly" name="contamination1" id="contamination">
+            {%else%}
+            <label for="contamination">Contamination date </label>
+            <input type="date" placeholder="yyyy-mm-dd" class="form-control" name="contamination" id="contamination2" max="date.getDate()" required>
+            {%endif%}
+        </div>
+        {% else %}
+        <div class="form-group row">
+            {%if recovery%}
+            <label for="recovery1">Recovery Date</label>
+                <input type="date" placeholder="yyyy-mm-dd" value={{recovery}} readonly="readonly" name="recovery" id="recovery1">
+            {%else%}
+            <label for="recovery2">Recovery Date</label>
+            <input type="date" lang="en" placeholder="yyyy-mm-dd" class="form-control" name="recovery" id="recovery2" min={{contamination}} max=date.getDate()>
+            {%endif%}
+        </div>
+{%endif%}
+        <button type="btnAdd" class="btn btn-primary">Submit</button>
+        <a href="/" class="btn btn-primary">Cancel</a>
+      </form>
+</body>
