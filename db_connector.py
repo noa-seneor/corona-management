@@ -1,5 +1,8 @@
+import base64
+from io import BytesIO
 import mysql.connector
-
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 
 def connect_to_db():
@@ -10,9 +13,9 @@ def connect_to_db():
     mydb = mysql.connector.connect(
         host='localhost',
         user='root',
-        password='my_password',
+        password='suzane2310',
         port='3306',
-        database='my_db'
+        database='nonotar'
     )
     return mydb
 
@@ -74,7 +77,8 @@ def get_covid_info(id):
     mycursor = mydb.cursor()
 
     #vaccine info
-    mycursor.execute(f"select dose, doseDate, vaccineName from membervaccinedose inner join vaccine on membervaccinedose.vaccineId"
+    mycursor.execute(f"select dose, doseDate, vaccineName from membervaccinedose inner join "
+                     f"vaccine on membervaccinedose.vaccineId"
                      f"= vaccine.vaccineId where MemberId= {id}")
     rows = mycursor.fetchall()
 
@@ -156,7 +160,7 @@ def get_vaccine(id):
     mycursor.execute(f"select max(doseDate) + interval 1 day, count(*) from membervaccinedose where MemberId={id}")
     data = mycursor.fetchone()
     min_date = data[0]
-    totaldose=data[1]
+    totaldose = data[1]
     if totaldose>3:
         return None
 
@@ -214,7 +218,7 @@ def add_image(id, binarydata):
     :param id: member id
     :param binarydata: img in bytes
     """
-    conn =connect_to_db()
+    conn = connect_to_db()
     cur = conn.cursor()
     if fetch_image(id) is None:
         cur.execute(f"INSERT INTO `nonotar`.`images`(`MemberId`,`photo`) VALUES (%s, %s)", (id,binarydata))
@@ -246,24 +250,47 @@ def fetch_image(id):
 
 
 def month_graph():
+    """
+    retrieve from db numbers of covid positive members per day last month
+    , create the graph and encode
+    :return:
+    """
     mydb = connect_to_db()
     mycursor = mydb.cursor()
     mycursor.execute(f"set @minDate = (current_date() - interval day(now()) - 1 day - interval 1 month)")
     mycursor.execute( f"set @MaxDate = (current_date() - interval day(now()) day)")
     for _ in mycursor.execute(f"with recursive cte (oneday) as ( select @minDate union all select (date(oneday) "
                      f"+ interval 1 day) from cte where oneday<@maxDate) "
-                     f"select oneday, sum(sick) as "
+                     f"select day(oneday), sum(sick) as "
                      f"totalsick from (select oneday, if (oneday between contaminationDate and "
                      f"recoveryDate,1,0) as sick from cte join covid) as s1 group by oneday "
-                     f"order by oneday;", multi=True): pass
+                     f"order by oneday;", multi=True):
+        pass
     month_data = mycursor.fetchall()
-    return month_data
+    plt.figure(figsize=(10, 8))
+    plt.plot(*zip(*month_data))
+    plt.xticks([x for x in range(len(month_data)+1)])
+    plt.xticks(rotation=45)
+    plt.title("last month positive covid members")
+    plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(1))
+    plt.xlabel("day")
+    plt.ylabel("sick members")
+    plt.grid()
+    plt.savefig("month_sicks")
+    tmpfile = BytesIO()
+    plt.savefig(tmpfile, format='png')
+    encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+    return encoded
 
 
 def total_unvaccinated():
+    """
+    retrieve from db numbers of unvaccinated people in the clinic
+    :return:
+    """
     mydb = connect_to_db()
     mycursor = mydb.cursor()
-    mycursor.execute(f"select count(distinct(m.MemberId)) from members m where m.MemberId not in (select MemberId from membervaccinedose)")
+    mycursor.execute(f"select count(distinct(m.MemberId)) from members m "
+                     f"where m.MemberId not in (select MemberId from membervaccinedose)")
     total = mycursor.fetchone()[0]
     return total
-
