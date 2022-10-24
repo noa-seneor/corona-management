@@ -33,25 +33,14 @@
 </table>
 <td><a href='/addmember'>Add member</a></td>
 <h1>
-        total members unvaccinated <br>
+        total members unvaccinated
     </h1>
  <td><br>{{total}} members <br></td>
 
  <h1>
         total sick per day last month <br>
     </h1>
-
- <table border=1 id="table2" class="table">
-<tbody>
-    {% for day in month_data %}
-        <tr>
-            <th scope="col">{{day[0]}}</th>
-            <td>{{day[1]}}</td>
-        </tr>
-    {%endfor%}
-
-</tbody>
-</table>
-
+<td><img src="data:image/png;base64, {{encoded}}" alt="red dot" width="700" height="500"  />
+</td>
 </body>
 </html>
