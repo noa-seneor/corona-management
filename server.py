@@ -1,9 +1,9 @@
 import base64
 import db_connector
-from flask import Flask, request, jsonify, render_template, redirect
+from flask import Flask, request,render_template, redirect
 
 
-app = Flask(__name__,template_folder='templates')
+app = Flask(__name__, template_folder='templates')
 
 
 # for default route
@@ -14,8 +14,8 @@ def main():
     """
     members_list = db_connector.get_members()
     total = db_connector.total_unvaccinated()
-    month_data = db_connector.month_graph()
-    return render_template("members.html", members=members_list, total=total, month_data=month_data)
+    encoded = db_connector.month_graph()
+    return render_template("members.html", members=members_list, total=total, encoded=encoded)
 
 
 @app.route("/addmember", methods=['GET', 'POST'])
@@ -27,7 +27,7 @@ def add_member():
         return render_template("addmember.html", member={})
 
     if request.method == 'POST':
-        new_member=[]
+        new_member = []
         data = request.form
         new_member.append(int(data.get('id')))
         new_member.append(data.get('name'))
@@ -166,7 +166,7 @@ def add_image(id):
     """
     if db_connector.fetch_image(id):
         return "image already uploaded"
-    if request.method=='GET':
+    if request.method == 'GET':
         return render_template('addimage.html')
     if request.method == 'POST':
         f = request.files['photo']
